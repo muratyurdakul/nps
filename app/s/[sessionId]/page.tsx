@@ -164,14 +164,17 @@ export default function NpsInputPage() {
           colleague?
         </p>
 
-        {/* Butonlar */}
+                {/* Butonlar */}
         <div
           style={{
+            marginTop: 18,
             display: "flex",
-            gap: 8,
-            overflowX: "auto",
+            flexWrap: "wrap",          // tek satıra zorlamıyoruz, taşarsa alta iner
+            gap: 14,                    // buton aralıkları daha geniş
             justifyContent: "center",
-            paddingBottom: 6,
+            maxWidth: 460,              // ortada kompakt bir alan
+            marginLeft: "auto",
+            marginRight: "auto",
           }}
         >
           {Array.from({ length: 10 }, (_, i) => i + 1).map((num) => {
@@ -184,13 +187,13 @@ export default function NpsInputPage() {
                 onClick={() => handleVote(num)}
                 disabled={disabled && !selected}
                 style={{
-                  minWidth: 42,
-                  height: 42,
+                  minWidth: 52,          // BUTONLAR DAHA BÜYÜK
+                  height: 52,
                   borderRadius: "50%",
                   border: `1px solid ${border}`,
                   background: bg,
                   color: text,
-                  fontSize: 16,
+                  fontSize: 18,          // sayı daha büyük
                   fontWeight: 600,
                 }}
               >
