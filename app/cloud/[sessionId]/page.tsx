@@ -113,7 +113,7 @@ export default function NpsOutputPage() {
         style={{
           flex: 1,
           display: "flex",
-          alignItems: "center",
+          alignItems: "stretch", // çocuklar tam yüksekliği kullanabilsin
           justifyContent: "center",
           padding: 24,
           gap: 24,
@@ -133,6 +133,7 @@ export default function NpsOutputPage() {
               flexDirection: "column",
               alignItems: "center",
               gap: 16,
+              justifyContent: "center",
             }}
           >
             {/* Metin QR'ın ÜSTÜNDE */}
@@ -176,30 +177,40 @@ export default function NpsOutputPage() {
           style={{
             width: "auto",
             display: "flex",
-            flexDirection: "column",
             alignItems: "center",
-            gap: 12,
+            height: "100%",
           }}
         >
-          {/* hashtag tam seperatörün üstünde, ortalı */}
           <div
             style={{
-              color: "#22c55e", // promoters'la aynı yeşil
-              fontSize: 34,
-              fontWeight: 800,
-              textAlign: "center",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              height: "100%",
+              gap: 12,
             }}
           >
-            #promptToProduct
+            {/* hashtag seperatörün üstünde */}
+            <div
+              style={{
+                color: "#22c55e", // promoters'la aynı yeşil
+                fontSize: 34,
+                fontWeight: 800,
+                textAlign: "center",
+              }}
+            >
+              #promptToProduct
+            </div>
+            <div
+              style={{
+                width: 2,
+                flex: 1, // kalan yüksekliğin tamamını doldursun
+                background: "rgba(226,232,240,0.35)", // daha az beyaz
+                borderRadius: 9999,
+                marginTop: 4,
+              }}
+            />
           </div>
-          <div
-            style={{
-              width: 2,
-              height: "65%",
-              background: "rgba(226,232,240,0.35)", // daha az beyaz
-              borderRadius: 9999,
-            }}
-          />
         </div>
 
         {/* SAĞ YARIM: NPS OUTPUT */}
@@ -257,7 +268,7 @@ export default function NpsOutputPage() {
                     strokeWidth={strokeWidth}
                     fill="none"
                   />
-                  <circle
+                <circle
                     cx={size / 2}
                     cy={size / 2}
                     r={radius}
@@ -316,7 +327,7 @@ export default function NpsOutputPage() {
                   <div
                     style={{
                       fontSize: 14,
-                      color: "#e5e7eb",
+                      color: "#f97373",
                       marginTop: 2,
                     }}
                   >
@@ -340,7 +351,7 @@ export default function NpsOutputPage() {
                   <div
                     style={{
                       fontSize: 14,
-                      color: "#e5e7eb",
+                      color: "#facc15",
                       marginTop: 2,
                     }}
                   >
@@ -364,7 +375,7 @@ export default function NpsOutputPage() {
                   <div
                     style={{
                       fontSize: 14,
-                      color: "#e5e7eb",
+                      color: "#22c55e",
                       marginTop: 2,
                     }}
                   >
