@@ -57,7 +57,7 @@ export default function NpsOutputPage() {
 
   const { total, detractors, passives, promoters, nps } = stats;
 
-  const size = 360; // daire boyutu
+  const size = 360;
   const strokeWidth = 32;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -108,27 +108,25 @@ export default function NpsOutputPage() {
         </span>
       </header>
 
-      {/* Orta alan: Sol QR + Sağ NPS */}
+      {/* Orta alan: Sol QR | Separator | Sağ NPS */}
       <div
         style={{
           flex: 1,
           display: "flex",
-          justifyContent: "center",
           alignItems: "center",
-          padding: 16,
+          justifyContent: "center",
+          padding: 24,
+          gap: 24,
         }}
       >
+        {/* SOL YARIM: QR */}
         <div
           style={{
+            flex: 1,
             display: "flex",
-            gap: 48,
-            alignItems: "center",
             justifyContent: "center",
-            maxWidth: 1200,
-            width: "100%",
           }}
         >
-          {/* SOL: QR */}
           <div
             style={{
               display: "flex",
@@ -139,7 +137,7 @@ export default function NpsOutputPage() {
           >
             <div
               style={{
-                padding: 16,
+                padding: 20,
                 borderRadius: 24,
                 background:
                   "radial-gradient(circle at top, #1e293b, #020617 65%)",
@@ -147,35 +145,50 @@ export default function NpsOutputPage() {
               }}
             >
               <Image
-                src="/nps-qr.png" // QR görselini public/nps-qr.png olarak kaydet
-                alt="Scan to rate this session"
-                width={220}
-                height={220}
+                src="/nps-qr.png"
+                alt="Scan QR code to give feedback"
+                width={260} // QR daha büyük
+                height={260}
                 style={{
                   display: "block",
-                  borderRadius: 16,
+                  borderRadius: 20,
                 }}
               />
             </div>
             <p
               style={{
-                fontSize: 14,
+                fontSize: 16,
                 color: "#cbd5f5",
                 textAlign: "center",
                 maxWidth: 260,
                 lineHeight: 1.4,
               }}
             >
-              Scan this QR code to rate
-              <br />
-              <strong>“AI x Product Management – The New Paradigm”</strong>
+              Scan QR code to give feedback
             </p>
           </div>
+        </div>
 
-          {/* SAĞ: NPS kartı */}
+        {/* ORTA SEPERATÖR */}
+        <div
+          style={{
+            width: 2,
+            height: "65%",
+            background: "rgba(248,250,252,0.8)", // beyaza yakın
+            borderRadius: 9999,
+          }}
+        />
+
+        {/* SAĞ YARIM: NPS OUTPUT */}
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
           <div
             style={{
-              flex: 1,
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
@@ -213,7 +226,6 @@ export default function NpsOutputPage() {
                   height={size}
                   style={{ transform: "rotate(-90deg)" }}
                 >
-                  {/* Arka plan track */}
                   <circle
                     cx={size / 2}
                     cy={size / 2}
@@ -222,7 +234,6 @@ export default function NpsOutputPage() {
                     strokeWidth={strokeWidth}
                     fill="none"
                   />
-                  {/* İlerleme */}
                   <circle
                     cx={size / 2}
                     cy={size / 2}
@@ -236,7 +247,6 @@ export default function NpsOutputPage() {
                   />
                 </svg>
 
-                {/* NPS sayı değeri */}
                 <div
                   style={{
                     position: "absolute",
