@@ -73,6 +73,8 @@ export default function NpsOutputPage() {
       ? "#facc15"
       : "#22c55e";
 
+  const separatorColor = "rgba(226,232,240,0.35)";
+
   return (
     <main
       style={{
@@ -113,7 +115,7 @@ export default function NpsOutputPage() {
         style={{
           flex: 1,
           display: "flex",
-          alignItems: "stretch", // çocuklar tam yüksekliği kullanabilsin
+          alignItems: "stretch",
           justifyContent: "center",
           padding: 24,
           gap: 24,
@@ -193,9 +195,10 @@ export default function NpsOutputPage() {
             {/* hashtag seperatörün üstünde */}
             <div
               style={{
-                color: "#22c55e", // promoters'la aynı yeşil
-                fontSize: 34,
+                color: separatorColor,
+                fontSize: 38,
                 fontWeight: 800,
+                fontStyle: "italic",
                 textAlign: "center",
               }}
             >
@@ -204,8 +207,8 @@ export default function NpsOutputPage() {
             <div
               style={{
                 width: 2,
-                flex: 1, // kalan yüksekliğin tamamını doldursun
-                background: "rgba(226,232,240,0.35)", // daha az beyaz
+                height: "60%", // biraz daha kısa çizgi
+                background: separatorColor,
                 borderRadius: 9999,
                 marginTop: 4,
               }}
@@ -268,7 +271,7 @@ export default function NpsOutputPage() {
                     strokeWidth={strokeWidth}
                     fill="none"
                   />
-                <circle
+                  <circle
                     cx={size / 2}
                     cy={size / 2}
                     r={radius}
@@ -311,9 +314,19 @@ export default function NpsOutputPage() {
                   fontSize: 22,
                 }}
               >
+                {/* Detractors */}
                 <div>
-                  <div style={{ color: "#f97373", marginBottom: 4 }}>
+                  <div style={{ color: "#f97373", marginBottom: 2 }}>
                     Detractors
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 14,
+                      color: "#f97373",
+                      marginBottom: 4,
+                    }}
+                  >
+                    (1–6)
                   </div>
                   <div
                     style={{
@@ -324,20 +337,21 @@ export default function NpsOutputPage() {
                   >
                     {detractors}
                   </div>
+                </div>
+
+                {/* Passives */}
+                <div>
+                  <div style={{ color: "#facc15", marginBottom: 2 }}>
+                    Passives
+                  </div>
                   <div
                     style={{
                       fontSize: 14,
-                      color: "#f97373",
-                      marginTop: 2,
+                      color: "#facc15",
+                      marginBottom: 4,
                     }}
                   >
-                    (1–6)
-                  </div>
-                </div>
-
-                <div>
-                  <div style={{ color: "#facc15", marginBottom: 4 }}>
-                    Passives
+                    (7–8)
                   </div>
                   <div
                     style={{
@@ -348,20 +362,21 @@ export default function NpsOutputPage() {
                   >
                     {passives}
                   </div>
+                </div>
+
+                {/* Promoters */}
+                <div>
+                  <div style={{ color: "#22c55e", marginBottom: 2 }}>
+                    Promoters
+                  </div>
                   <div
                     style={{
                       fontSize: 14,
-                      color: "#facc15",
-                      marginTop: 2,
+                      color: "#22c55e",
+                      marginBottom: 4,
                     }}
                   >
-                    (7–8)
-                  </div>
-                </div>
-
-                <div>
-                  <div style={{ color: "#22c55e", marginBottom: 4 }}>
-                    Promoters
+                    (9–10)
                   </div>
                   <div
                     style={{
@@ -371,15 +386,6 @@ export default function NpsOutputPage() {
                     }}
                   >
                     {promoters}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: 14,
-                      color: "#22c55e",
-                      marginTop: 2,
-                    }}
-                  >
-                    (9–10)
                   </div>
                 </div>
               </div>
