@@ -150,7 +150,7 @@ export default function NpsInputPage() {
   const isInitial = selectedScore == null;
   const showThanks = hasSubmitted;
 
-  // BUTON RENK KARARLARI (güncellendi)
+  // BUTON RENK KARARLARI
   const borderColor = isInitial
     ? "#ffffff"
     : showThanks
@@ -158,16 +158,24 @@ export default function NpsInputPage() {
     : sendColors.border;
 
   const backgroundColor = isInitial
-    ? "transparent" // ilk açılışta şeffaf
+    ? "transparent"
     : showThanks
     ? "transparent"
     : sendColors.bg;
 
   const textColor = isInitial
-    ? "#ffffff" // ilk açılışta beyaz yazı
+    ? "#ffffff"
     : showThanks
     ? "#e5e7eb"
     : sendColors.text;
+
+  // Alt satır hizalaması için: 7 -> col 2, 8 -> 3, 9 -> 4, 10 -> 5
+  const colByScore: Record<number, string> = {
+    7: "2 / 3",
+    8: "3 / 4",
+    9: "4 / 5",
+    10: "5 / 6",
+  };
 
   return (
     <main
@@ -223,7 +231,7 @@ export default function NpsInputPage() {
           How likely are you to recommend this session to a friend or colleague?
         </p>
 
-        {/* SKOR BUTONLARI – 1–6 üst satır, 7–10 alt satır */}
+        {/* SKOR BUTONLARI – 1–6 üst satır, 7–10 alt satır (6 sütun hizalı) */}
         <div
           style={{
             marginTop: 28,
@@ -277,11 +285,11 @@ export default function NpsInputPage() {
             })}
           </div>
 
-          {/* Row 2: 7–10 */}
+          {/* Row 2: 7–10 (aynı 6 kolon grid içinde hizalanmış) */}
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+              gridTemplateColumns: "repeat(6, minmax(0, 1fr))",
               gap: 10,
             }}
           >
@@ -312,6 +320,7 @@ export default function NpsInputPage() {
                     boxShadow: isSelected
                       ? "0 8px 30px rgba(0,0,0,0.4)"
                       : "none",
+                    gridColumn: colByScore[score], // 7→2, 8→3, 9→4, 10→5
                   }}
                 >
                   {score}
