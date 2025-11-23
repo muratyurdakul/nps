@@ -11,6 +11,7 @@ import {
   collection,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import Image from "next/image";
 
 const TEST_MODE = true;
 
@@ -90,13 +91,11 @@ export default function NpsInputPage() {
   }, [sessionId]);
 
   const handleScoreClick = (score: number) => {
-    // live modda daha önce gönderdiyse tekrar seçemesin
     if (!TEST_MODE && hasSubmitted) return;
 
     setSelectedScore(score);
     setError(null);
 
-    // test modda yeni skor seçince tekrar gönderebilsin
     if (TEST_MODE && hasSubmitted) {
       setHasSubmitted(false);
     }
@@ -114,7 +113,6 @@ export default function NpsInputPage() {
       const votesCol = collection(db, "sessions", sessionId, "votes");
 
       if (TEST_MODE) {
-        // test modda her seferinde yeni doküman
         await addDoc(votesCol, {
           score: selectedScore,
           createdAt: serverTimestamp(),
@@ -148,6 +146,27 @@ export default function NpsInputPage() {
   const sendColors = getBucketColor(selectedScore);
   const sendDisabled =
     selectedScore == null || isSubmitting || (!TEST_MODE && hasSubmitted);
+
+  const isInitial = selectedScore == null;
+  const showThanks = hasSubmitted;
+
+  const borderColor = isInitial
+    ? "#ffffff"
+    : showThanks
+    ? sendColors.border
+    : sendColors.border;
+
+  const backgroundColor = isInitial
+    ? "#ffffff"
+    : showThanks
+    ? "transparent"
+    : sendColors.bg;
+
+  const textColor = isInitial
+    ? "#020617" // okunabilir olsun diye koyu
+    : showThanks
+    ? "#e5e7eb"
+    : sendColors.text;
 
   return (
     <main
@@ -195,7 +214,7 @@ export default function NpsInputPage() {
         <p
           style={{
             marginTop: 32,
-            fontSize: 20, // büyüttük
+            fontSize: 20,
             lineHeight: 1.4,
             color: "#e5e7eb",
           }}
@@ -272,20 +291,13 @@ export default function NpsInputPage() {
           disabled={sendDisabled}
           style={{
             marginTop: 32,
-            minHeight: 52,
-            padding: "0 20px",
+            height: 56,
+            width: "100%",
+            maxWidth: 360,
             borderRadius: 999,
-            border: sendDisabled
-              ? "2px solid rgba(248,250,252,0.6)"
-              : `2px solid ${sendColors.border}`,
-            background:
-              selectedScore == null || hasSubmitted
-                ? "transparent"
-                : sendColors.bg,
-            color:
-              selectedScore == null || hasSubmitted
-                ? "#e5e7eb"
-                : sendColors.text,
+            border: `3px solid ${borderColor}`,
+            background: backgroundColor,
+            color: textColor,
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
@@ -293,30 +305,27 @@ export default function NpsInputPage() {
             cursor: sendDisabled ? "default" : "pointer",
             fontSize: 16,
             fontWeight: 700,
-            opacity: sendDisabled ? 0.6 : 1,
+            opacity: sendDisabled ? 0.9 : 1,
             transition:
               "background 0.15s ease, transform 0.1s ease, box-shadow 0.1s ease, opacity 0.1s ease",
             boxShadow:
-              !sendDisabled && selectedScore != null && !hasSubmitted
+              !sendDisabled && !showThanks && !isInitial
                 ? "0 10px 30px rgba(0,0,0,0.45)"
                 : "none",
           }}
         >
-          {hasSubmitted ? (
+          {showThanks ? (
             <span>Thanks for your valuable feedback</span>
           ) : (
             <>
               <span>SEND</span>
-              <span
-                style={{
-                  fontSize: 18,
-                  lineHeight: 1,
-                  display: "inline-block",
-                  transform: "translateY(1px)",
-                }}
-              >
-                ↗
-              </span>
+              <Image
+                src="/send.png"
+                alt="Send"
+                width={18}
+                height={18}
+                style={{ display: "block" }}
+              />
             </>
           )}
         </button>
