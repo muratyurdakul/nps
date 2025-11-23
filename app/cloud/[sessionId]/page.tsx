@@ -135,6 +135,19 @@ export default function NpsOutputPage() {
               gap: 16,
             }}
           >
+            {/* Metin QR'ın ÜSTÜNDE */}
+            <p
+              style={{
+                fontSize: 18,
+                color: "#ffffff",
+                textAlign: "center",
+                maxWidth: 260,
+                lineHeight: 1.4,
+              }}
+            >
+              Scan QR code to give feedback
+            </p>
+
             <div
               style={{
                 padding: 20,
@@ -147,7 +160,7 @@ export default function NpsOutputPage() {
               <Image
                 src="/nps-qr.png"
                 alt="Scan QR code to give feedback"
-                width={260} // QR daha büyük
+                width={260}
                 height={260}
                 style={{
                   display: "block",
@@ -155,29 +168,37 @@ export default function NpsOutputPage() {
                 }}
               />
             </div>
-            <p
-              style={{
-                fontSize: 16,
-                color: "#cbd5f5",
-                textAlign: "center",
-                maxWidth: 260,
-                lineHeight: 1.4,
-              }}
-            >
-              Scan QR code to give feedback
-            </p>
           </div>
         </div>
 
-        {/* ORTA SEPERATÖR */}
+        {/* ORTA SEPERATÖR + hashtag */}
         <div
           style={{
-            width: 2,
-            height: "65%",
-            background: "rgba(248,250,252,0.8)", // beyaza yakın
-            borderRadius: 9999,
+            width: "auto",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 12,
           }}
-        />
+        >
+          <div
+            style={{
+              color: "#e5e7eb",
+              fontSize: 34, // NPS başlığından biraz büyük
+              fontWeight: 800,
+            }}
+          >
+            #promptToProduct
+          </div>
+          <div
+            style={{
+              width: 2,
+              height: "65%",
+              background: "rgba(226,232,240,0.45)", // daha az beyaz
+              borderRadius: 9999,
+            }}
+          />
+        </div>
 
         {/* SAĞ YARIM: NPS OUTPUT */}
         <div
