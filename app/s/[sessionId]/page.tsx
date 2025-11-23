@@ -150,6 +150,7 @@ export default function NpsInputPage() {
   const isInitial = selectedScore == null;
   const showThanks = hasSubmitted;
 
+  // BUTON RENK KARARLARI (güncellendi)
   const borderColor = isInitial
     ? "#ffffff"
     : showThanks
@@ -157,13 +158,13 @@ export default function NpsInputPage() {
     : sendColors.border;
 
   const backgroundColor = isInitial
-    ? "#ffffff"
+    ? "transparent" // ilk açılışta şeffaf
     : showThanks
     ? "transparent"
     : sendColors.bg;
 
   const textColor = isInitial
-    ? "#020617" // okunabilir olsun diye koyu
+    ? "#ffffff" // ilk açılışta beyaz yazı
     : showThanks
     ? "#e5e7eb"
     : sendColors.text;
@@ -222,50 +223,102 @@ export default function NpsInputPage() {
           How likely are you to recommend this session to a friend or colleague?
         </p>
 
-        {/* 1–10 skor butonları */}
+        {/* SKOR BUTONLARI – 1–6 üst satır, 7–10 alt satır */}
         <div
           style={{
             marginTop: 28,
-            display: "grid",
-            gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
-            gap: 14,
             width: "100%",
             maxWidth: 420,
+            display: "flex",
+            flexDirection: "column",
+            gap: 14,
           }}
         >
-          {Array.from({ length: 10 }).map((_, i) => {
-            const score = i + 1;
-            const bucketColors = getBucketColor(score);
-            const isSelected = selectedScore === score;
+          {/* Row 1: 1–6 */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(6, minmax(0, 1fr))",
+              gap: 10,
+            }}
+          >
+            {Array.from({ length: 6 }).map((_, i) => {
+              const score = i + 1;
+              const bucketColors = getBucketColor(score);
+              const isSelected = selectedScore === score;
 
-            return (
-              <button
-                key={score}
-                type="button"
-                onClick={() => handleScoreClick(score)}
-                style={{
-                  aspectRatio: "1 / 1",
-                  borderRadius: 999,
-                  border: `2px solid ${bucketColors.border}`,
-                  background: isSelected ? bucketColors.bg : "transparent",
-                  color: isSelected ? bucketColors.text : bucketColors.border,
-                  fontSize: 18,
-                  fontWeight: 600,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  cursor: "pointer",
-                  transition:
-                    "transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease",
-                  boxShadow: isSelected
-                    ? "0 8px 30px rgba(0,0,0,0.4)"
-                    : "none",
-                }}
-              >
-                {score}
-              </button>
-            );
-          })}
+              return (
+                <button
+                  key={score}
+                  type="button"
+                  onClick={() => handleScoreClick(score)}
+                  style={{
+                    aspectRatio: "1 / 1",
+                    borderRadius: 999,
+                    border: `2px solid ${bucketColors.border}`,
+                    background: isSelected ? bucketColors.bg : "transparent",
+                    color: isSelected ? bucketColors.text : bucketColors.border,
+                    fontSize: 18,
+                    fontWeight: 600,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    transition:
+                      "transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease",
+                    boxShadow: isSelected
+                      ? "0 8px 30px rgba(0,0,0,0.4)"
+                      : "none",
+                  }}
+                >
+                  {score}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Row 2: 7–10 */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+              gap: 10,
+            }}
+          >
+            {Array.from({ length: 4 }).map((_, i) => {
+              const score = i + 7; // 7,8,9,10
+              const bucketColors = getBucketColor(score);
+              const isSelected = selectedScore === score;
+
+              return (
+                <button
+                  key={score}
+                  type="button"
+                  onClick={() => handleScoreClick(score)}
+                  style={{
+                    aspectRatio: "1 / 1",
+                    borderRadius: 999,
+                    border: `2px solid ${bucketColors.border}`,
+                    background: isSelected ? bucketColors.bg : "transparent",
+                    color: isSelected ? bucketColors.text : bucketColors.border,
+                    fontSize: 18,
+                    fontWeight: 600,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    transition:
+                      "transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease",
+                    boxShadow: isSelected
+                      ? "0 8px 30px rgba(0,0,0,0.4)"
+                      : "none",
+                  }}
+                >
+                  {score}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Alt açıklama */}
