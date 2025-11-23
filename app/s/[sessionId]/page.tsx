@@ -12,225 +12,343 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
-const TEST_MODE = false;
+const TEST_MODE = true;
+
+function getBucketColor(score: number | null) {
+  if (!score) {
+    return {
+      border: "rgba(248, 250, 252, 0.7)",
+      bg: "transparent",
+      text: "#e5e7eb",
+    };
+  }
+  if (score <= 6) {
+    return {
+      border: "#f97373",
+      bg: "#b91c1c",
+      text: "#ffffff",
+    };
+  }
+  if (score <= 8) {
+    return {
+      border: "#fbbf24",
+      bg: "#c27803",
+      text: "#ffffff",
+    };
+  }
+  return {
+    border: "#22c55e",
+    bg: "#15803d",
+    text: "#ffffff",
+  };
+}
 
 export default function NpsInputPage() {
   const params = useParams();
   const sessionId = params.sessionId as string;
 
-  const [userId, setUserId] = useState<string | null>(null);
+  const [selectedScore, setSelectedScore] = useState<number | null>(null);
+  const [deviceId, setDeviceId] = useState<string | null>(null);
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [existingScore, setExistingScore] = useState<number | null>(null);
-  const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">(
-    "idle"
-  );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
+  // device id + daha önce oy vermiş mi kontrolü (TEST_MODE hariç)
   useEffect(() => {
-    if (!sessionId) return;
-    const stored = window.localStorage.getItem("npsUserId");
-    let uid = stored;
-    if (!uid) {
-      uid =
-        crypto.randomUUID?.() ??
-        `u_${Math.random().toString(36).slice(2)}_${Date.now()}`;
-      window.localStorage.setItem("npsUserId", uid);
-    }
-    setUserId(uid);
+    if (TEST_MODE || !sessionId) return;
+    if (typeof window === "undefined") return;
 
-    const check = async () => {
-      const ref = doc(db, "sessions", sessionId, "votes", uid!);
-      const snap = await getDoc(ref);
-      if (snap.exists()) {
-        const data = snap.data() as { score?: number };
-        if (typeof data.score === "number") {
-          setExistingScore(data.score);
+    const key = `nps_device_${sessionId}`;
+    let id = window.localStorage.getItem(key);
+
+    if (!id) {
+      const rand =
+        (window.crypto && window.crypto.randomUUID
+          ? window.crypto.randomUUID()
+          : Math.random().toString(36).slice(2)) + "_" + Date.now();
+      id = rand;
+      window.localStorage.setItem(key, id);
+    }
+    setDeviceId(id);
+
+    // daha önce oy vermiş mi?
+    (async () => {
+      try {
+        const ref = doc(db, "sessions", sessionId, "votes", id!);
+        const snap = await getDoc(ref);
+        if (snap.exists()) {
+          const data = snap.data() as { score?: number };
+          if (typeof data.score === "number") {
+            setSelectedScore(data.score);
+          }
           setHasSubmitted(true);
         }
+      } catch (e) {
+        console.error(e);
       }
-    };
-
-    check();
+    })();
   }, [sessionId]);
 
-  const handleVote = async (score: number) => {
-    if (!sessionId) return;
+  const handleScoreClick = (score: number) => {
+    // live modda daha önce gönderdiyse tekrar seçemesin
     if (!TEST_MODE && hasSubmitted) return;
 
-    setStatus("sending");
+    setSelectedScore(score);
+    setError(null);
+
+    // test modda yeni skor seçince tekrar gönderebilsin
+    if (TEST_MODE && hasSubmitted) {
+      setHasSubmitted(false);
+    }
+  };
+
+  const handleSend = async () => {
+    if (!sessionId || selectedScore == null) return;
+    if (isSubmitting) return;
+    if (!TEST_MODE && hasSubmitted) return;
+
+    setIsSubmitting(true);
+    setError(null);
 
     try {
+      const votesCol = collection(db, "sessions", sessionId, "votes");
+
       if (TEST_MODE) {
-        await addDoc(collection(db, "sessions", sessionId, "votes"), {
-          score,
-          createdAt: serverTimestamp(),
-        });
-      } else {
-        const ref = doc(db, "sessions", sessionId, "votes", userId!);
-        await setDoc(ref, {
-          score,
+        // test modda her seferinde yeni doküman
+        await addDoc(votesCol, {
+          score: selectedScore,
           createdAt: serverTimestamp(),
         });
         setHasSubmitted(true);
+      } else {
+        if (!deviceId) {
+          throw new Error("Device ID not ready");
+        }
+        const ref = doc(db, "sessions", sessionId, "votes", deviceId);
+        const snap = await getDoc(ref);
+        if (snap.exists()) {
+          setHasSubmitted(true);
+          setError("You have already submitted feedback from this device.");
+        } else {
+          await setDoc(ref, {
+            score: selectedScore,
+            createdAt: serverTimestamp(),
+          });
+          setHasSubmitted(true);
+        }
       }
-      setExistingScore(score);
-      setStatus("done");
     } catch (e) {
       console.error(e);
-      setStatus("error");
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const disabled =
-    status === "sending" || (!TEST_MODE && hasSubmitted);
-
-  // Buton renkleri (boşken: bg #0f172a, text = border rengi)
-  const getColors = (num: number, selected: boolean) => {
-    let border = "#334155";
-    let bg = "#0f172a";
-    let text = border;
-
-    if (num <= 6) {
-      border = "#ef4444";
-      text = border;
-      if (selected) {
-        bg = border;
-        text = "#ffffff";
-      }
-    } else if (num <= 8) {
-      border = "#f97316";
-      text = border;
-      if (selected) {
-        bg = border;
-        text = "#ffffff";
-      }
-    } else {
-      border = "#16a34a";
-      text = border;
-      if (selected) {
-        bg = "#22c55e";
-        text = "#ffffff";
-      }
-    }
-
-    return { bg, border, text };
-  };
+  const sendColors = getBucketColor(selectedScore);
+  const sendDisabled =
+    selectedScore == null || isSubmitting || (!TEST_MODE && hasSubmitted);
 
   return (
     <main
       style={{
-        height: "100vh",
-        overflow: "hidden",
+        minHeight: "100vh",
+        width: "100vw",
         background: "#0f172a",
-        padding: 16,
+        color: "white",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        padding: "24px 16px",
       }}
     >
-      <div style={{ width: "100%", maxWidth: 500 }}>
+      <div
+        style={{
+          width: "100%",
+          maxWidth: 480,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          textAlign: "center",
+        }}
+      >
         {/* Başlık */}
         <h1
           style={{
-            fontSize: 24,
+            fontSize: 26,
             fontWeight: 700,
-            textAlign: "center",
-            color: "white",
+            marginBottom: 4,
           }}
         >
           AI x Product Management
-          <br />
-          <span
-            style={{
-              fontSize: 18,
-              fontWeight: 500,
-              color: "#cbd5f5",
-            }}
-          >
-            The New Paradigm
-          </span>
         </h1>
+        <p
+          style={{
+            fontSize: 16,
+            color: "#cbd5f5",
+          }}
+        >
+          The New Paradigm
+        </p>
 
         {/* Soru */}
         <p
           style={{
-            marginTop: 16,
-            marginBottom: 20,
-            color: "#cbd5f5",
-            fontSize: 14,
-            textAlign: "center",
-            lineHeight: 1.5,
+            marginTop: 32,
+            fontSize: 20, // büyüttük
+            lineHeight: 1.4,
+            color: "#e5e7eb",
           }}
         >
-          How likely are you to recommend this session to a friend or
-          colleague?
+          How likely are you to recommend this session to a friend or colleague?
         </p>
 
-                {/* Butonlar */}
+        {/* 1–10 skor butonları */}
         <div
           style={{
-            marginTop: 18,
-            display: "flex",
-            flexWrap: "wrap",          // tek satıra zorlamıyoruz, taşarsa alta iner
-            gap: 14,                    // buton aralıkları daha geniş
-            justifyContent: "center",
-            maxWidth: 460,              // ortada kompakt bir alan
-            marginLeft: "auto",
-            marginRight: "auto",
+            marginTop: 28,
+            display: "grid",
+            gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
+            gap: 14,
+            width: "100%",
+            maxWidth: 420,
           }}
         >
-          {Array.from({ length: 10 }, (_, i) => i + 1).map((num) => {
-            const selected = existingScore === num;
-            const { bg, border, text } = getColors(num, selected);
+          {Array.from({ length: 10 }).map((_, i) => {
+            const score = i + 1;
+            const bucketColors = getBucketColor(score);
+            const isSelected = selectedScore === score;
 
             return (
               <button
-                key={num}
-                onClick={() => handleVote(num)}
-                disabled={disabled && !selected}
+                key={score}
+                type="button"
+                onClick={() => handleScoreClick(score)}
                 style={{
-                  minWidth: 52,          // BUTONLAR DAHA BÜYÜK
-                  height: 52,
-                  borderRadius: "50%",
-                  border: `1px solid ${border}`,
-                  background: bg,
-                  color: text,
-                  fontSize: 18,          // sayı daha büyük
+                  aspectRatio: "1 / 1",
+                  borderRadius: 999,
+                  border: `2px solid ${bucketColors.border}`,
+                  background: isSelected ? bucketColors.bg : "transparent",
+                  color: isSelected ? bucketColors.text : bucketColors.border,
+                  fontSize: 18,
                   fontWeight: 600,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                  transition:
+                    "transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease",
+                  boxShadow: isSelected
+                    ? "0 8px 30px rgba(0,0,0,0.4)"
+                    : "none",
                 }}
               >
-                {num}
+                {score}
               </button>
             );
           })}
         </div>
 
-        {/* Skala açıklaması */}
+        {/* Alt açıklama */}
         <div
           style={{
-            marginTop: 10,
+            marginTop: 20,
             display: "flex",
             justifyContent: "space-between",
-            fontSize: 11,
-            color: "#94a3b8",
+            width: "100%",
+            maxWidth: 420,
+            fontSize: 12,
+            color: "#9ca3af",
           }}
         >
           <span>1 = Not at all likely</span>
           <span>10 = Extremely likely</span>
         </div>
 
-        {/* Alt bilgi */}
-        <div
+        {/* SEND butonu */}
+        <button
+          type="button"
+          onClick={handleSend}
+          disabled={sendDisabled}
           style={{
-            marginTop: 14,
-            textAlign: "center",
-            fontSize: 11,
-            color: "#6b7280",
+            marginTop: 32,
+            minHeight: 52,
+            padding: "0 20px",
+            borderRadius: 999,
+            border: sendDisabled
+              ? "2px solid rgba(248,250,252,0.6)"
+              : `2px solid ${sendColors.border}`,
+            background:
+              selectedScore == null || hasSubmitted
+                ? "transparent"
+                : sendColors.bg,
+            color:
+              selectedScore == null || hasSubmitted
+                ? "#e5e7eb"
+                : sendColors.text,
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 10,
+            cursor: sendDisabled ? "default" : "pointer",
+            fontSize: 16,
+            fontWeight: 700,
+            opacity: sendDisabled ? 0.6 : 1,
+            transition:
+              "background 0.15s ease, transform 0.1s ease, box-shadow 0.1s ease, opacity 0.1s ease",
+            boxShadow:
+              !sendDisabled && selectedScore != null && !hasSubmitted
+                ? "0 10px 30px rgba(0,0,0,0.45)"
+                : "none",
           }}
         >
-          This poll is anonymous and limited to one response per
-          device in the live version.
+          {hasSubmitted ? (
+            <span>Thanks for your valuable feedback</span>
+          ) : (
+            <>
+              <span>SEND</span>
+              <span
+                style={{
+                  fontSize: 18,
+                  lineHeight: 1,
+                  display: "inline-block",
+                  transform: "translateY(1px)",
+                }}
+              >
+                ↗
+              </span>
+            </>
+          )}
+        </button>
+
+        {/* Hata mesajı */}
+        {error && (
+          <div
+            style={{
+              marginTop: 12,
+              fontSize: 13,
+              color: "#f97373",
+            }}
+          >
+            {error}
+          </div>
+        )}
+
+        {/* Anonim / tek cevap info */}
+        <div
+          style={{
+            marginTop: 18,
+            fontSize: 12,
+            color: "#9ca3af",
+            textAlign: "center",
+            lineHeight: 1.4,
+          }}
+        >
+          This poll is anonymous and limited to one response per device in the
+          live version.
         </div>
 
+        {/* Test mode notu */}
         {TEST_MODE && (
           <div
             style={{
