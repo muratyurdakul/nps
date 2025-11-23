@@ -125,53 +125,49 @@ export default function NpsOutputPage() {
         <div
           style={{
             flex: 1,
+            position: "relative",
             display: "flex",
             justifyContent: "center",
+            alignItems: "center",
           }}
         >
+          {/* QR kod tam ortada */}
           <div
             style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 16,
-              justifyContent: "center",
+              padding: 20,
+              borderRadius: 24,
+              background:
+                "radial-gradient(circle at top, #1e293b, #020617 65%)",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.45)",
             }}
           >
-            {/* Metin QR'ın ÜSTÜNDE */}
-            <p
+            <Image
+              src="/nps-qr.png"
+              alt="Scan QR code to give feedback"
+              width={260}
+              height={260}
               style={{
-                fontSize: 18,
-                color: "#ffffff",
-                textAlign: "center",
-                maxWidth: 260,
-                lineHeight: 1.4,
+                display: "block",
+                borderRadius: 20,
               }}
-            >
-              Scan QR code to give feedback
-            </p>
-
-            <div
-              style={{
-                padding: 20,
-                borderRadius: 24,
-                background:
-                  "radial-gradient(circle at top, #1e293b, #020617 65%)",
-                boxShadow: "0 20px 60px rgba(0,0,0,0.45)",
-              }}
-            >
-              <Image
-                src="/nps-qr.png"
-                alt="Scan QR code to give feedback"
-                width={260}
-                height={260}
-                style={{
-                  display: "block",
-                  borderRadius: 20,
-                }}
-              />
-            </div>
+            />
           </div>
+
+          {/* Text QR'ın üstünde, merkezden biraz yukarıda, tek satır */}
+          <p
+            style={{
+              position: "absolute",
+              bottom: "50%", // QR merkezdeyken bunun üstte kalması için
+              transform: "translateY(-24px)",
+              fontSize: 20,
+              fontWeight: 700,
+              color: "#ffffff",
+              textAlign: "center",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Scan QR code to give feedback
+          </p>
         </div>
 
         {/* ORTA SEPERATÖR + hashtag */}
@@ -189,7 +185,7 @@ export default function NpsOutputPage() {
               flexDirection: "column",
               alignItems: "center",
               height: "100%",
-              gap: 12,
+              gap: 40, // hashtag ile çizgi arasında daha fazla boşluk
             }}
           >
             {/* hashtag seperatörün üstünde */}
@@ -200,6 +196,7 @@ export default function NpsOutputPage() {
                 fontWeight: 800,
                 fontStyle: "italic",
                 textAlign: "center",
+                marginBottom: 8, // ekstra boşluk
               }}
             >
               #promptToProduct
@@ -222,6 +219,7 @@ export default function NpsOutputPage() {
             flex: 1,
             display: "flex",
             justifyContent: "center",
+            alignItems: "center",
           }}
         >
           <div
@@ -250,7 +248,7 @@ export default function NpsOutputPage() {
                   marginTop: -10,
                   fontSize: 30,
                   fontWeight: 700,
-                  color: "#f1f5f9",
+                  color: "#f1f59",
                 }}
               >
                 Net Promoter Score
