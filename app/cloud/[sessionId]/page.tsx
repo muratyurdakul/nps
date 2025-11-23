@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import Image from "next/image";
 
 type Vote = {
   score: number;
@@ -48,17 +49,16 @@ export default function NpsOutputPage() {
       else promoters++;
     }
 
-    const nps = Math.round(
-      (promoters / total - detractors / total) * 100
-    );
+    const nps =
+      total === 0 ? 0 : Math.round(((promoters - detractors) / total) * 100);
 
     return { total, detractors, passives, promoters, nps };
   }, [votes]);
 
   const { total, detractors, passives, promoters, nps } = stats;
 
-  const size = 360;
-  const strokeWidth = 24;
+  const size = 360; // daire boyutu
+  const strokeWidth = 32;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const progress = (nps + 100) / 200;
@@ -108,122 +108,209 @@ export default function NpsOutputPage() {
         </span>
       </header>
 
+      {/* Orta alan: Sol QR + Sağ NPS */}
       <div
         style={{
           flex: 1,
           display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
           justifyContent: "center",
+          alignItems: "center",
           padding: 16,
         }}
       >
         <div
           style={{
-            opacity: mounted ? 1 : 0,
-            transform: mounted ? "scale(1)" : "scale(0.96)",
-            transition: "opacity 0.6s ease, transform 0.6s ease",
             display: "flex",
-            flexDirection: "column",
+            gap: 48,
             alignItems: "center",
-            gap: 32,
+            justifyContent: "center",
+            maxWidth: 1200,
+            width: "100%",
           }}
         >
-          {/* Net Promoter Score — daha büyük, daha yukarıda */}
-          <div
-            style={{
-              marginTop: -10,
-              fontSize: 30,
-              fontWeight: 700,
-              color: "#f1f5f9",
-            }}
-          >
-            Net Promoter Score
-          </div>
-
-          {/* Dev daire */}
-          <div style={{ position: "relative", width: size, height: size }}>
-            <svg
-              width={size}
-              height={size}
-              style={{ transform: "rotate(-90deg)" }}
-            >
-              <circle
-                cx={size / 2}
-                cy={size / 2}
-                r={radius}
-                stroke="#1e293b"
-                strokeWidth={strokeWidth}
-                fill="none"
-              />
-
-              <circle
-                cx={size / 2}
-                cy={size / 2}
-                r={radius}
-                stroke={npsColor}
-                strokeWidth={strokeWidth}
-                fill="none"
-                strokeDasharray={circumference}
-                strokeDashoffset={offset}
-                strokeLinecap="round"
-              />
-            </svg>
-
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <span
-                style={{
-                  fontSize: 85,
-                  fontWeight: 800,
-                  color: npsColor,
-                }}
-              >
-                {total === 0 ? "--" : nps}
-              </span>
-            </div>
-          </div>
-
-          {/* Breakdown – daha büyük */}
+          {/* SOL: QR */}
           <div
             style={{
               display: "flex",
-              gap: 40,
-              textAlign: "center",
-              fontSize: 22,
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 16,
             }}
           >
-            <div>
-              <div style={{ color: "#f97373", marginBottom: 4 }}>
-                Detractors
-              </div>
-              <div style={{ fontWeight: 700, color: "#f97373", fontSize: 32 }}>
-                {detractors}
-              </div>
+            <div
+              style={{
+                padding: 16,
+                borderRadius: 24,
+                background:
+                  "radial-gradient(circle at top, #1e293b, #020617 65%)",
+                boxShadow: "0 20px 60px rgba(0,0,0,0.45)",
+              }}
+            >
+              <Image
+                src="/nps-qr.png" // QR görselini public/nps-qr.png olarak kaydet
+                alt="Scan to rate this session"
+                width={220}
+                height={220}
+                style={{
+                  display: "block",
+                  borderRadius: 16,
+                }}
+              />
             </div>
+            <p
+              style={{
+                fontSize: 14,
+                color: "#cbd5f5",
+                textAlign: "center",
+                maxWidth: 260,
+                lineHeight: 1.4,
+              }}
+            >
+              Scan this QR code to rate
+              <br />
+              <strong>“AI x Product Management – The New Paradigm”</strong>
+            </p>
+          </div>
 
-            <div>
-              <div style={{ color: "#facc15", marginBottom: 4 }}>
-                Passives
+          {/* SAĞ: NPS kartı */}
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: 16,
+            }}
+          >
+            <div
+              style={{
+                opacity: mounted ? 1 : 0,
+                transform: mounted ? "scale(1)" : "scale(0.96)",
+                transition: "opacity 0.6s ease, transform 0.6s ease",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 32,
+              }}
+            >
+              {/* Net Promoter Score başlık */}
+              <div
+                style={{
+                  marginTop: -10,
+                  fontSize: 30,
+                  fontWeight: 700,
+                  color: "#f1f5f9",
+                }}
+              >
+                Net Promoter Score
               </div>
-              <div style={{ fontWeight: 700, color: "#facc15", fontSize: 32 }}>
-                {passives}
-              </div>
-            </div>
 
-            <div>
-              <div style={{ color: "#22c55e", marginBottom: 4 }}>
-                Promoters
+              {/* Dev daire */}
+              <div style={{ position: "relative", width: size, height: size }}>
+                <svg
+                  width={size}
+                  height={size}
+                  style={{ transform: "rotate(-90deg)" }}
+                >
+                  {/* Arka plan track */}
+                  <circle
+                    cx={size / 2}
+                    cy={size / 2}
+                    r={radius}
+                    stroke="#1e293b"
+                    strokeWidth={strokeWidth}
+                    fill="none"
+                  />
+                  {/* İlerleme */}
+                  <circle
+                    cx={size / 2}
+                    cy={size / 2}
+                    r={radius}
+                    stroke={npsColor}
+                    strokeWidth={strokeWidth}
+                    fill="none"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={offset}
+                    strokeLinecap="round"
+                  />
+                </svg>
+
+                {/* NPS sayı değeri */}
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: 85,
+                      fontWeight: 800,
+                      color: npsColor,
+                    }}
+                  >
+                    {total === 0 ? "--" : nps}
+                  </span>
+                </div>
               </div>
-              <div style={{ fontWeight: 700, color: "#22c55e", fontSize: 32 }}>
-                {promoters}
+
+              {/* Breakdown */}
+              <div
+                style={{
+                  display: "flex",
+                  gap: 40,
+                  textAlign: "center",
+                  fontSize: 22,
+                }}
+              >
+                <div>
+                  <div style={{ color: "#f97373", marginBottom: 4 }}>
+                    Detractors
+                  </div>
+                  <div
+                    style={{
+                      fontWeight: 700,
+                      color: "#f97373",
+                      fontSize: 32,
+                    }}
+                  >
+                    {detractors}
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ color: "#facc15", marginBottom: 4 }}>
+                    Passives
+                  </div>
+                  <div
+                    style={{
+                      fontWeight: 700,
+                      color: "#facc15",
+                      fontSize: 32,
+                    }}
+                  >
+                    {passives}
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ color: "#22c55e", marginBottom: 4 }}>
+                    Promoters
+                  </div>
+                  <div
+                    style={{
+                      fontWeight: 700,
+                      color: "#22c55e",
+                      fontSize: 32,
+                    }}
+                  >
+                    {promoters}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
