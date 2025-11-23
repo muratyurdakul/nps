@@ -28,6 +28,7 @@ export default function NpsOutputPage() {
         .map((doc) => doc.data() as { score?: number })
         .filter((d) => typeof d.score === "number")
         .map((d) => ({ score: d.score! }));
+
       setVotes(list);
     });
 
@@ -121,53 +122,56 @@ export default function NpsOutputPage() {
           gap: 24,
         }}
       >
-        {/* SOL YARIM: QR */}
+        {/* SOL YARIM: QR (sol yarının tam ortasında) */}
         <div
           style={{
             flex: 1,
-            position: "relative",
             display: "flex",
-            justifyContent: "center",
             alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          {/* QR kod tam ortada */}
           <div
             style={{
-              padding: 20,
-              borderRadius: 24,
-              background:
-                "radial-gradient(circle at top, #1e293b, #020617 65%)",
-              boxShadow: "0 20px 60px rgba(0,0,0,0.45)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 24,
             }}
           >
-            <Image
-              src="/nps-qr.png"
-              alt="Scan QR code to give feedback"
-              width={260}
-              height={260}
+            <p
               style={{
-                display: "block",
-                borderRadius: 20,
+                fontSize: 20,
+                fontWeight: 700,
+                color: "#ffffff",
+                textAlign: "center",
+                whiteSpace: "nowrap",
               }}
-            />
-          </div>
+            >
+              Scan QR code to give feedback
+            </p>
 
-          {/* Text QR'ın üstünde, merkezden biraz yukarıda, tek satır */}
-          <p
-            style={{
-              position: "absolute",
-              bottom: "50%", // QR merkezdeyken bunun üstte kalması için
-              transform: "translateY(-24px)",
-              fontSize: 20,
-              fontWeight: 700,
-              color: "#ffffff",
-              textAlign: "center",
-              whiteSpace: "nowrap",
-            }}
-          >
-            Scan QR code to give feedback
-          </p>
+            <div
+              style={{
+                padding: 20,
+                borderRadius: 24,
+                background:
+                  "radial-gradient(circle at top, #1e293b, #020617 65%)",
+                boxShadow: "0 20px 60px rgba(0,0,0,0.45)",
+              }}
+            >
+              <Image
+                src="/nps-qr.png"
+                alt="Scan QR code to give feedback"
+                width={260}
+                height={260}
+                style={{
+                  display: "block",
+                  borderRadius: 20,
+                }}
+              />
+            </div>
+          </div>
         </div>
 
         {/* ORTA SEPERATÖR + hashtag */}
@@ -185,10 +189,10 @@ export default function NpsOutputPage() {
               flexDirection: "column",
               alignItems: "center",
               height: "100%",
-              gap: 40, // hashtag ile çizgi arasında daha fazla boşluk
+              gap: 80, // hashtag ve çizgi arasındaki boşluk 2x
             }}
           >
-            {/* hashtag seperatörün üstünde */}
+            {/* hashtag seperatörün ÜSTÜNDE */}
             <div
               style={{
                 color: separatorColor,
@@ -196,7 +200,6 @@ export default function NpsOutputPage() {
                 fontWeight: 800,
                 fontStyle: "italic",
                 textAlign: "center",
-                marginBottom: 8, // ekstra boşluk
               }}
             >
               #promptToProduct
@@ -204,16 +207,15 @@ export default function NpsOutputPage() {
             <div
               style={{
                 width: 2,
-                height: "60%", // biraz daha kısa çizgi
+                height: "60%",
                 background: separatorColor,
                 borderRadius: 9999,
-                marginTop: 4,
               }}
             />
           </div>
         </div>
 
-        {/* SAĞ YARIM: NPS OUTPUT */}
+        {/* SAĞ YARIM: NPS OUTPUT (sağ yarının tam ortasında) */}
         <div
           style={{
             flex: 1,
@@ -248,7 +250,7 @@ export default function NpsOutputPage() {
                   marginTop: -10,
                   fontSize: 30,
                   fontWeight: 700,
-                  color: "#f1f59",
+                  color: "#f1f5f9",
                 }}
               >
                 Net Promoter Score
