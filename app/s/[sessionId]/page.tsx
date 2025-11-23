@@ -118,14 +118,14 @@ export default function NpsInputPage() {
   return (
     <main
       style={{
-        height: "100vh",        // minHeight yerine height
-        overflow: "hidden",     // scroll'u kapat
+        height: "100vh",
+        overflow: "hidden",
         background: "#0f172a",
-        padding: 16,            // biraz daha sıkı padding, ekrana daha rahat sığsın
+        padding: 16,
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-    }}
+      }}
     >
       <div style={{ width: "100%", maxWidth: 500 }}>
         {/* Başlık */}
