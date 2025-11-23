@@ -115,20 +115,55 @@ export default function NpsOutputPage() {
       <div
         style={{
           flex: 1,
-          display: "flex",
-          alignItems: "stretch",
-          justifyContent: "center",
+          position: "relative",
           padding: 24,
-          gap: 24,
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          alignItems: "center",
         }}
       >
-        {/* SOL YARIM: QR (sol yarının tam ortasında) */}
+        {/* Hashtag + dikey çizgi (tam ortada) */}
         <div
           style={{
-            flex: 1,
+            position: "absolute",
+            left: "50%",
+            transform: "translateX(-50%)",
+            top: 24,
             display: "flex",
+            flexDirection: "column",
             alignItems: "center",
+            gap: 80, // hashtag ile çizgi arası
+          }}
+        >
+          <div
+            style={{
+              color: separatorColor,
+              fontSize: 38,
+              fontWeight: 800,
+              fontStyle: "italic",
+              textAlign: "center",
+            }}
+          >
+            #promptToProduct
+          </div>
+          <div
+            style={{
+              width: 2,
+              height: "60vh",
+              maxHeight: "60%",
+              background: separatorColor,
+              borderRadius: 9999,
+            }}
+          />
+        </div>
+
+        {/* SOL YARIM: QR (tam sol yarı ortası) */}
+        <div
+          style={{
+            gridColumn: "1 / 2",
+            display: "flex",
             justifyContent: "center",
+            alignItems: "center",
           }}
         >
           <div
@@ -174,51 +209,10 @@ export default function NpsOutputPage() {
           </div>
         </div>
 
-        {/* ORTA SEPERATÖR + hashtag */}
+        {/* SAĞ YARIM: NPS OUTPUT (tam sağ yarı ortası) */}
         <div
           style={{
-            width: "auto",
-            display: "flex",
-            alignItems: "center",
-            height: "100%",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              height: "100%",
-              gap: 80, // hashtag ve çizgi arasındaki boşluk 2x
-            }}
-          >
-            {/* hashtag seperatörün ÜSTÜNDE */}
-            <div
-              style={{
-                color: separatorColor,
-                fontSize: 38,
-                fontWeight: 800,
-                fontStyle: "italic",
-                textAlign: "center",
-              }}
-            >
-              #promptToProduct
-            </div>
-            <div
-              style={{
-                width: 2,
-                height: "60%",
-                background: separatorColor,
-                borderRadius: 9999,
-              }}
-            />
-          </div>
-        </div>
-
-        {/* SAĞ YARIM: NPS OUTPUT (sağ yarının tam ortasında) */}
-        <div
-          style={{
-            flex: 1,
+            gridColumn: "2 / 3",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
