@@ -12,7 +12,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
-const TEST_MODE = true;
+const TEST_MODE = false;
 
 export default function NpsInputPage() {
   const params = useParams();
