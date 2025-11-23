@@ -181,11 +181,13 @@ export default function NpsOutputPage() {
             gap: 12,
           }}
         >
+          {/* hashtag tam seperatörün üstünde, ortalı */}
           <div
             style={{
-              color: "#e5e7eb",
-              fontSize: 34, // NPS başlığından biraz büyük
+              color: "#22c55e", // promoters'la aynı yeşil
+              fontSize: 34,
               fontWeight: 800,
+              textAlign: "center",
             }}
           >
             #promptToProduct
@@ -194,7 +196,7 @@ export default function NpsOutputPage() {
             style={{
               width: 2,
               height: "65%",
-              background: "rgba(226,232,240,0.45)", // daha az beyaz
+              background: "rgba(226,232,240,0.35)", // daha az beyaz
               borderRadius: 9999,
             }}
           />
@@ -311,6 +313,15 @@ export default function NpsOutputPage() {
                   >
                     {detractors}
                   </div>
+                  <div
+                    style={{
+                      fontSize: 14,
+                      color: "#e5e7eb",
+                      marginTop: 2,
+                    }}
+                  >
+                    (1–6)
+                  </div>
                 </div>
 
                 <div>
@@ -326,6 +337,15 @@ export default function NpsOutputPage() {
                   >
                     {passives}
                   </div>
+                  <div
+                    style={{
+                      fontSize: 14,
+                      color: "#e5e7eb",
+                      marginTop: 2,
+                    }}
+                  >
+                    (7–8)
+                  </div>
                 </div>
 
                 <div>
@@ -340,6 +360,15 @@ export default function NpsOutputPage() {
                     }}
                   >
                     {promoters}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 14,
+                      color: "#e5e7eb",
+                      marginTop: 2,
+                    }}
+                  >
+                    (9–10)
                   </div>
                 </div>
               </div>
