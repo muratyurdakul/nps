@@ -420,7 +420,7 @@ export default function NpsInputPage() {
           }}
         >
           {showThanks ? (
-            <span>Thanks for your valuable feedback</span>
+            <span>Thanks for your feedback</span>
           ) : (
             <>
               <span>SEND</span>
