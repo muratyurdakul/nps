@@ -155,10 +155,13 @@ export default function NpsInputPage() {
           setHasSubmitted(true);
         }
       }
-    } catch (e) {
-      console.error(e);
-      setError("Something went wrong. Please try again.");
-    } finally {
+      } catch (e: any) {
+    console.error(e);
+    const message =
+      e?.message ||
+      (typeof e === "string" ? e : "Something went wrong. Please try again.");
+    setError(message);
+  } finally {
       setIsSubmitting(false);
     }
   };
