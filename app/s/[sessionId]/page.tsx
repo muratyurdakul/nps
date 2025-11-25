@@ -53,6 +53,7 @@ export default function NpsInputPage() {
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
 
   // device id + daha önce oy vermiş mi kontrolü (TEST_MODE hariç)
   useEffect(() => {
@@ -78,9 +79,12 @@ export default function NpsInputPage() {
         const ref = doc(db, "sessions", sessionId, "votes", id!);
         const snap = await getDoc(ref);
         if (snap.exists()) {
-          const data = snap.data() as { score?: number };
+          const data = snap.data() as { score?: number; email?: string };
           if (typeof data.score === "number") {
             setSelectedScore(data.score);
+          }
+          if (typeof data.email === "string") {
+            setEmail(data.email);
           }
           setHasSubmitted(true);
         }
@@ -112,11 +116,18 @@ export default function NpsInputPage() {
     try {
       const votesCol = collection(db, "sessions", sessionId, "votes");
 
+      const trimmedEmail = email.trim();
+      const payload: any = {
+        score: selectedScore,
+        createdAt: serverTimestamp(),
+      };
+      if (trimmedEmail.length > 0) {
+        payload.email = trimmedEmail;
+      }
+
       if (TEST_MODE) {
-        await addDoc(votesCol, {
-          score: selectedScore,
-          createdAt: serverTimestamp(),
-        });
+        // Test modunda her seferinde yeni doküman
+        await addDoc(votesCol, payload);
         setHasSubmitted(true);
       } else {
         if (!deviceId) {
@@ -128,10 +139,7 @@ export default function NpsInputPage() {
           setHasSubmitted(true);
           setError("You have already submitted feedback from this device.");
         } else {
-          await setDoc(ref, {
-            score: selectedScore,
-            createdAt: serverTimestamp(),
-          });
+          await setDoc(ref, payload);
           setHasSubmitted(true);
         }
       }
@@ -192,13 +200,13 @@ export default function NpsInputPage() {
     >
       <div
         style={{
-          width: "100%",
-          maxWidth: 480,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          textAlign: "center",
-        }}
+        width: "100%",
+        maxWidth: 480,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        textAlign: "center",
+      }}
       >
         {/* Başlık */}
         <h1
@@ -346,13 +354,34 @@ export default function NpsInputPage() {
           <span>10 = Extremely likely</span>
         </div>
 
+        {/* OPTIONAL EMAIL FIELD */}
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Type your email address (optional)"
+          style={{
+            marginTop: 24,
+            height: 48,
+            width: "100%",
+            maxWidth: 360,
+            borderRadius: 999,
+            border: "1px solid rgba(248,250,252,0.45)",
+            background: "rgba(248,250,252,0.06)",
+            color: "#e5e7eb",
+            padding: "0 18px",
+            fontSize: 14,
+            outline: "none",
+          }}
+        />
+
         {/* SEND butonu */}
         <button
           type="button"
           onClick={handleSend}
           disabled={sendDisabled}
           style={{
-            marginTop: 32,
+            marginTop: 16,
             height: 56,
             width: "100%",
             maxWidth: 360,
