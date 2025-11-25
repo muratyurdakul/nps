@@ -44,6 +44,12 @@ function getBucketColor(score: number | null) {
   };
 }
 
+// Basit ama iş gören email kontrolü
+function isValidEmail(email: string) {
+  // boş değilse email@domain.tld formatına baksın
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 export default function NpsInputPage() {
   const params = useParams();
   const sessionId = params.sessionId as string;
@@ -73,7 +79,6 @@ export default function NpsInputPage() {
     }
     setDeviceId(id);
 
-    // daha önce oy vermiş mi?
     (async () => {
       try {
         const ref = doc(db, "sessions", sessionId, "votes", id!);
@@ -100,6 +105,7 @@ export default function NpsInputPage() {
     setSelectedScore(score);
     setError(null);
 
+    // Test modda yeni skor seçince tekrar gönderebilsin
     if (TEST_MODE && hasSubmitted) {
       setHasSubmitted(false);
     }
@@ -110,23 +116,29 @@ export default function NpsInputPage() {
     if (isSubmitting) return;
     if (!TEST_MODE && hasSubmitted) return;
 
+    const trimmedEmail = email.trim();
+
+    // Email doluysa formatını kontrol et
+    if (trimmedEmail && !isValidEmail(trimmedEmail)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
     setIsSubmitting(true);
     setError(null);
 
     try {
       const votesCol = collection(db, "sessions", sessionId, "votes");
 
-      const trimmedEmail = email.trim();
       const payload: any = {
         score: selectedScore,
         createdAt: serverTimestamp(),
       };
-      if (trimmedEmail.length > 0) {
+      if (trimmedEmail) {
         payload.email = trimmedEmail;
       }
 
       if (TEST_MODE) {
-        // Test modunda her seferinde yeni doküman
         await addDoc(votesCol, payload);
         setHasSubmitted(true);
       } else {
@@ -158,7 +170,6 @@ export default function NpsInputPage() {
   const isInitial = selectedScore == null;
   const showThanks = hasSubmitted;
 
-  // BUTON RENK KARARLARI
   const borderColor = isInitial
     ? "#ffffff"
     : showThanks
@@ -200,13 +211,13 @@ export default function NpsInputPage() {
     >
       <div
         style={{
-        width: "100%",
-        maxWidth: 480,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        textAlign: "center",
-      }}
+          width: "100%",
+          maxWidth: 480,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          textAlign: "center",
+        }}
       >
         {/* Başlık */}
         <h1
@@ -293,7 +304,7 @@ export default function NpsInputPage() {
             })}
           </div>
 
-          {/* Row 2: 7–10 (aynı 6 kolon grid içinde hizalanmış) */}
+          {/* Row 2: 7–10 */}
           <div
             style={{
               display: "grid",
@@ -302,7 +313,7 @@ export default function NpsInputPage() {
             }}
           >
             {Array.from({ length: 4 }).map((_, i) => {
-              const score = i + 7; // 7,8,9,10
+              const score = i + 7;
               const bucketColors = getBucketColor(score);
               const isSelected = selectedScore === score;
 
@@ -328,7 +339,7 @@ export default function NpsInputPage() {
                     boxShadow: isSelected
                       ? "0 8px 30px rgba(0,0,0,0.4)"
                       : "none",
-                    gridColumn: colByScore[score], // 7→2, 8→3, 9→4, 10→5
+                    gridColumn: colByScore[score],
                   }}
                 >
                   {score}
