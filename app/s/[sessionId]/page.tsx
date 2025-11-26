@@ -13,7 +13,7 @@ import {
 import { db } from "@/lib/firebase";
 import Image from "next/image";
 
-const TEST_MODE = true;
+const TEST_MODE = false;
 
 function getBucketColor(score: number | null) {
   if (!score) {
